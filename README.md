@@ -7,5 +7,5 @@ python 3.5
 tensorflow 1.7
 
 開啟終端機(CMD)
-輸入 '''git clone https://github.com/AlanHoNCKU/ai_appilication_project.git'''
-移動路徑 object_detection 開啟終端機執行 python objection_detection_v1.py
+輸入 ```git clone https://github.com/AlanHoNCKU/ai_appilication_project.git```
+移動路徑 object_detection 開啟終端機執行 ```python objection_detection_v1.py```
