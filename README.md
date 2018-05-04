@@ -1,4 +1,4 @@
-# ai_appilication_project
+# AI appilication project
 人工智慧實務期末專案
 
 版本
