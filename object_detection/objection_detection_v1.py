@@ -2,7 +2,7 @@
 '''
 author: Chia Yu, Ho
 date: 20180430
-v
+x
 '''
 import numpy as np
 import os
