@@ -17,6 +17,8 @@ from io import StringIO
 from matplotlib import pyplot as plt
 from PIL import Image
 
+import cv2
+
 if tf.__version__ < '1.4.0':
   raise ImportError('Please upgrade your tensorflow installation to v1.4.* or later!')
 
@@ -59,7 +61,6 @@ label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
 categories = label_map_util.convert_label_map_to_categories(label_map, max_num_classes=NUM_CLASSES, use_display_name=True)
 category_index = label_map_util.create_category_index(categories)
 
-import cv2
 cap=cv2.VideoCapture(0) # 0 代表與第一個攝影機連接
 filename="output0.avi"
 codec=cv2.VideoWriter_fourcc('m','p','4','v')# fourcc代表四個字符代碼
