@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 '''
-author: Chia Yu, Ho
-date: 20180430
-test
+@author: Chia Yu, Ho
+@date: 20180430
 '''
 import numpy as np
 import os
