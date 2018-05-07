@@ -173,7 +173,6 @@ def image_label_bbox_score(image_paths, image_size):
         plt.show()
         print(123)
 
-
 if __name__ == "__main__":
     detection_graph, category_index = model_preparation()
     image_paths, image_size = load_image()
