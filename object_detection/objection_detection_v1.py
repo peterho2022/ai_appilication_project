@@ -69,17 +69,10 @@ resolution=(640,480)
 VideoFileOutput=cv2.VideoWriter(filename,codec,framerate, resolution)
     
 with detection_graph.as_default():
-  with tf.Session(graph=detection_graph) as sess:
-    
+  with tf.Session(graph=detection_graph) as sess:  
     ret=True
-        
-    
     while (ret):
-        
-        
-        ret, image_np=cap.read() 
-
-
+        ret, image_np=cap.read()
         # 定義detection_graph的輸入和輸出向量
         image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
         # 每個框代表檢測到特定物件
@@ -88,8 +81,7 @@ with detection_graph.as_default():
         # 分數和類別標籤示在圖像上
         detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
         detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
-        num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-       
+        num_detections = detection_graph.get_tensor_by_name('num_detections:0')       
           # 由於模型可能會具有shape，因此擴展成[1, None, None, 3]
         image_np_expanded = np.expand_dims(image_np, axis=0)
           # 開始預測
