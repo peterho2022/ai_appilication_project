@@ -9,7 +9,7 @@ from pygame.locals import *
 
 def server():
     try:
-    	print "\nServer started at " + str(socket.gethostbyname(socket.gethostname())) + " at port " + str(90)	
+    	print ("\nServer started at " + str(socket.gethostbyname(socket.gethostname())) + " at port " + str(90)	)
     	port = 90
     	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     	serversocket.bind(("",port))
@@ -20,7 +20,7 @@ def server():
     	img = pygame.Surface((640,480))
     	while True:
     		connection, address = serversocket.accept()
-    		print "GOT_CONNECTION"
+    		print ("GOT_CONNECTION")
     		cam.get_image(img)
     		data = pygame.image.tostring(img,"RGB")
     		connection.sendall(data)

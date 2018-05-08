@@ -53,73 +53,73 @@ main:
 
 '''
 class main(BoxLayout):
-	ipAddress = None
-	port = None
+    ipAddress = None
+    port = None
 	
-	def playPause(self):
-		if self.ipAddress == None or self.port == None:
-			box = GridLayout(cols=1)
-			box.add_widget(Label(text="Ip or Port Not Set"))
-			btn = Button(text="OK")
-			btn.bind(on_press=self.closePopup)
-			box.add_widget(btn)
-			self.popup1 = Popup(title='Error',content=box,size_hint=(.8,.3))
-			self.popup1.open()
-		else:
-			if self.ids.status.text == "Stop":self.stop()
-			else:
-				self.ids.status.text = "Stop"
-				Clock.schedule_interval(self.recv, 0.1)
+    def playPause(self):
+        if self.ipAddress == None or self.port == None:
+            box = GridLayout(cols=1)
+            box.add_widget(Label(text="Ip or Port Not Set"))
+            btn = Button(text="OK")
+            btn.bind(on_press=self.closePopup)
+            box.add_widget(btn)
+            self.popup1 = Popup(title='Error',content=box,size_hint=(.8,.3))
+            self.popup1.open()
+        else:
+            if self.ids.status.text == "Stop":self.stop()
+            else:
+                self.ids.status.text = "Stop"
+                Clock.schedule_interval(self.recv, 0.1)
 
-	def closePopup(self,btn):
-		self.popup1.dismiss()
+    def closePopup(self,btn):
+        self.popup1.dismiss()
 
-	def stop(self):
-		self.ids.status.text = "Play"
-		Clock.unschedule(self.recv)
+    def stop(self):
+        self.ids.status.text = "Play"
+        Clock.unschedule(self.recv)
 
-	def recv(self, dt):
-		clientsocket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		clientsocket.connect((self.ipAddress, self.port))
-		received = []
-		while True:
-			recvd_data = clientsocket.recv(230400)
-			if not recvd_data:
-				break
-			else:
-				received.append(recvd_data)
-		dataset = ''.join(received)
-		image = pygame.image.fromstring(dataset,(640, 480),"RGB") # convert received image from string
-		try:
-			pygame.image.save(image, "foo.jpg")
-			self.ids.image_source.reload()
-		except:
-			pass
+    def recv(self, dt):
+        clientsocket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        clientsocket.connect((self.ipAddress, self.port))
+        received = []
+        while True:
+            recvd_data = clientsocket.recv(230400)
+            if not recvd_data:
+                    break
+            else:
+                received.append(recvd_data)
+            dataset = ''.join(received)
+            image = pygame.image.fromstring(dataset,(640, 480),"RGB") # convert received image from string
+        try:
+            pygame.image.save(image, "foo.jpg")
+            self.ids.image_source.reload()
+        except:
+            pass
 
-	def close(self):
-		App.get_running_app().stop()
+    def close(self):
+        App.get_running_app().stop()
 
-	def setting(self):
-		box = GridLayout(cols = 2)
-		box.add_widget(Label(text="IpAddress: ", bold = True))
-		self.st = TextInput(id= "serverText")
-		box.add_widget(self.st)
-		box.add_widget(Label(text="Port: ", bold = True))
-		self.pt = TextInput(id= "portText")
-		box.add_widget(self.pt)
-		btn = Button(text="Set", bold=True)
-		btn.bind(on_press=self.settingProcess)
-		box.add_widget(btn)
-		self.popup = Popup(title='Settings',content=box,size_hint=(.6,.4))
-		self.popup.open()
+    def setting(self):
+        box = GridLayout(cols = 2)
+        box.add_widget(Label(text="IpAddress: ", bold = True))
+        self.st = TextInput(id= "serverText")
+        box.add_widget(self.st)
+        box.add_widget(Label(text="Port: ", bold = True))
+        self.pt = TextInput(id= "portText")
+        box.add_widget(self.pt)
+        btn = Button(text="Set", bold=True)
+        btn.bind(on_press=self.settingProcess)
+        box.add_widget(btn)
+        self.popup = Popup(title='Settings',content=box,size_hint=(.6,.4))
+        self.popup.open()
 
-	def settingProcess(self, btn):
-		try:
-			self.ipAddress = self.st.text
-			self.port = int(self.pt.text)
-		except:
-			pass
-		self.popup.dismiss()
+    def settingProcess(self, btn):
+        try:
+            self.ipAddress = self.st.text
+            self.port = int(self.pt.text)
+        except:
+            pass
+        self.popup.dismiss()
 
 
 class videoStreamApp(App):
