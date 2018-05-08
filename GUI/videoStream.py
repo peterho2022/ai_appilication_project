@@ -88,8 +88,8 @@ class main(BoxLayout):
                     break
             else:
                 received.append(recvd_data)
-            dataset = ''.join(received)
-            image = pygame.image.fromstring(dataset,(640, 480),"RGB") # convert received image from string
+        dataset = ''.join(received)
+        image = pygame.image.fromstring(dataset,(640, 480),"RGB") # convert received image from string
         try:
             pygame.image.save(image, "foo.jpg")
             self.ids.image_source.reload()
