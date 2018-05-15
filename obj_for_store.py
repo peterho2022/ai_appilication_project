@@ -172,9 +172,10 @@ def image_label_bbox_score(image_paths, image_size):
         
         plt.figure(figsize=image_size)
         #plt.imshow(image_np)
+        image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
         cv2.imwrite(image_path,image_np)
 
-        plt.show()
+        #plt.show()
 
 
 
