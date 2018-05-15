@@ -149,7 +149,7 @@ def label_classes(detection_graph, image_paths):
     return objects
 
 def image_label_bbox_score(image_paths, image_size):
-    print (image_paths)
+
     for image_path in image_paths:
         image = Image.open(image_path)
         # the array based representation of the image will be used later in order to prepare the
