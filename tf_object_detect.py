@@ -172,8 +172,79 @@ def image_label_bbox_score(image_paths, image_size):
         plt.imshow(image_np)
         plt.show()
 
+# 拍照
+def photo():
+    cap = cv2.VideoCapture(0)
+    while(1):
+        # get a frame
+        ret, frame = cap.read()
+        frame = cv2.resize(frame, (600,400), interpolation=cv2.INTER_CUBIC)
+        # show a frame
+        cv2.imshow("capture", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            cv2.imwrite("test.jpg", frame)
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
+def object_detect_stream(detection_graph, category_index):
+    cap=cv2.VideoCapture(0) # 0 代表與第一個攝影機連接
+    filename="output0.avi"
+    codec=cv2.VideoWriter_fourcc('m','p','4','v')# fourcc代表四個字符代碼
+    framerate=30
+    resolution=(640,480)
+
+    VideoFileOutput=cv2.VideoWriter(filename,codec,framerate, resolution)
+
+    with detection_graph.as_default():
+        with tf.Session(graph=detection_graph) as sess:  
+            ret=True
+            while (ret):
+                ret, image_np=cap.read()
+                # 定義detection_graph的輸入和輸出向量
+                image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
+                # 每個框代表檢測到特定物件
+                detection_boxes = detection_graph.get_tensor_by_name('detection_boxes:0')
+                # 每個分數代表物件的可信度
+                # 分數和類別標籤示在圖像上
+                detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
+                detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
+                num_detections = detection_graph.get_tensor_by_name('num_detections:0')       
+                # 由於模型可能會具有shape，因此擴展成[1, None, None, 3]
+                image_np_expanded = np.expand_dims(image_np, axis=0)
+                # 開始預測
+                (boxes, scores, classes, num) = sess.run(
+                    [detection_boxes, detection_scores, detection_classes, num_detections],
+                    feed_dict={image_tensor: image_np_expanded})
+                # 可視化預測的結果.
+                vis_util.visualize_boxes_and_labels_on_image_array(
+                    image_np,
+                    np.squeeze(boxes),
+                    np.squeeze(classes).astype(np.int32),
+                    np.squeeze(scores),
+                    category_index,
+                    use_normalized_coordinates=True,
+                    line_thickness=8)
+                objects = []
+                threshold = 0.5
+                for index, value in enumerate(classes[0]):
+                    object_dict = {}
+                    if scores[0, index] > threshold:
+                        object_dict[(category_index.get(value)).get('name').encode('utf8')] = scores[0, index]
+                        objects.append(object_dict)
+                print(objects)
+                VideoFileOutput.write(image_np)
+                cv2.imshow('live_detection',image_np)
+                if cv2.waitKey(25) & 0xFF==ord('q'):
+                    break
+                    cv2.destroyAllWindows()
+                    cap.release()
+
 if __name__ == "__main__":
     detection_graph, category_index = model_preparation()
-    image_paths, image_size = load_image()
-    objects = label_classes(detection_graph,image_paths)
-    image_label_bbox_score(image_paths, image_size)
+    object_detect_stream(detection_graph, category_index)
+    # while True:
+    #     photo()
+    #     image_paths, image_size = load_image()
+    #     objects = label_classes(detection_graph,image_paths)
+    #     image_label_bbox_score(image_paths, image_size)
