@@ -2,6 +2,8 @@
 人工智慧實務期末專案
 ## 目標
 使用 tensorflow 物件辨識，建立一款可以讓玩家去尋找所需物品的遊戲。
+## 臉書粉絲團
+https://www.facebook.com/City-Hunt-219114685486763/
 ## 版本
 win 10
 python 3.5
