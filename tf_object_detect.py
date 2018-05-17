@@ -239,9 +239,19 @@ def object_detect_stream(detection_graph, category_index):
                     break
                     cv2.destroyAllWindows()
                     cap.release()
+                try:
+                    if list(objects[0].keys())[0] == b'person':
+                        print("good")
+                        break
+                        cv2.destroyAllWindows()
+                        cap.release()
+                except IndexError:
+                    print(000)
 
 if __name__ == "__main__":
+    # 載入模型
     detection_graph, category_index = model_preparation()
+    # 即時串流
     object_detect_stream(detection_graph, category_index)
     # while True:
     #     photo()
