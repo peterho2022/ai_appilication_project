@@ -15,9 +15,11 @@ from io import StringIO
 from matplotlib import pyplot as plt
 from PIL import Image
 import cv2
+import time
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
+# 載入模型
 def model_preparation():
     # 設定系統路徑
     sys.path.append("../object_detection")
@@ -50,11 +52,13 @@ def model_preparation():
     category_index = label_map_util.create_category_index(categories)
     return detection_graph, category_index
 
+# 載入圖片轉成numpy
 def load_image_into_numpy_array(image):
   (im_width, im_height) = image.size
   return np.array(image.getdata()).reshape(
       (im_height, im_width, 3)).astype(np.uint8)
 
+# 讀取圖片
 def load_image():
     # For the sake of simplicity we will use only 2 images:
     # image1.jpg
@@ -68,6 +72,7 @@ def load_image():
     image_size = (12, 8)
     return image_paths, image_size
 
+# 
 def run_inference_for_single_image(image, graph):
   with graph.as_default():
     with tf.Session() as sess:
@@ -113,6 +118,7 @@ def run_inference_for_single_image(image, graph):
         output_dict['detection_masks'] = output_dict['detection_masks'][0]
   return output_dict
 
+# 輸出 物件類別
 def label_classes(detection_graph, image_paths):
     threshold = 0.5 # in order to get higher percentages you need to lower this number; usually at 0.01 you get 100% predicted objects
     with detection_graph.as_default():
@@ -148,6 +154,7 @@ def label_classes(detection_graph, image_paths):
                 print(len(np.where(scores[0] > threshold)[0])/num_detections[0])
     return objects
 
+# 顯示包含物件辨識的圖片
 def image_label_bbox_score(image_paths, image_size):
     for image_path in image_paths:
         image = Image.open(image_path)
@@ -187,7 +194,8 @@ def photo():
     cap.release()
     cv2.destroyAllWindows()
 
-def object_detect_stream(detection_graph, category_index):
+# 即時串流(目前主要是執行這個函式)
+def object_detect_stream(detection_graph, category_index, goal_object):
     cap=cv2.VideoCapture(0) # 0 代表與第一個攝影機連接
     filename="output0.avi"
     codec=cv2.VideoWriter_fourcc('m','p','4','v')# fourcc代表四個字符代碼
@@ -240,19 +248,22 @@ def object_detect_stream(detection_graph, category_index):
                     cv2.destroyAllWindows()
                     cap.release()
                 try:
-                    if list(objects[0].keys())[0] == b'person':
+                    if list(objects[0].keys())[0] == goal_object:
                         print("good")
-                        break
-                        cv2.destroyAllWindows()
+                        # cv2.destroyAllWindows()
                         cap.release()
+                        # 這邊我先使用睡眠 1 秒，到時候設計 GUI 的人可以改成完成特效
+                        time.sleep(1)
+                        break
                 except IndexError:
-                    print(000)
+                    pass
 
 if __name__ == "__main__":
     # 載入模型
     detection_graph, category_index = model_preparation()
     # 即時串流
-    object_detect_stream(detection_graph, category_index)
+    while True:
+        object_detect_stream(detection_graph, category_index, b'person')
     # while True:
     #     photo()
     #     image_paths, image_size = load_image()
