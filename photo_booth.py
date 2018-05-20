@@ -7,10 +7,11 @@ from pyimagesearch.photoboothapp import PhotoBoothApp
 from imutils.video import VideoStream
 import argparse
 import time
+import sys
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-o", "--output", required=True,
+ap.add_argument("-o", "--output", default='output',
 	help="path to output directory to store snapshots")
 ap.add_argument("-p", "--picamera", type=int, default=-1,
 	help="whether or not the Raspberry Pi camera should be used")
