@@ -10,7 +10,7 @@ import cv2
 import os
 
 import numpy as np
-
+import random
 import six.moves.urllib as urllib
 import sys
 import tarfile
@@ -45,8 +45,17 @@ class PhotoBoothApp:
         self.panel = None
         # create a button, that when pressed, will take the current
         # frame and save it to file
-        btn = tki.Button(self.root, text="Snapshot!",command=self.takeSnapshot)
+        btn = tki.Button(self.root, text="Hunting !",command=self.takeSnapshot)
         btn.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)
+        
+#        l = tki.Label(window, 
+#            text='OMG! this is TK!',    # 标签的文字
+#            bg='green',     # 背景颜色
+#            font=('Arial', 12),     # 字体和字体大小
+#            width=15, height=2  # 标签长宽
+#            )
+#        l.pack()    # 固定窗口位置
+
         
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
@@ -57,20 +66,22 @@ class PhotoBoothApp:
         # set a callback to handle when the window is closed
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
-    
         
-
         
     def check(self):
-        img = cv2.imread('F4522_3.jpg',1)
+        img = cv2.imread(os.getcwd()+'\\pyimagesearch\\F4522_3.jpg',1)
         image = Image.fromarray(img)
-        return image
+        image = ImageTk.PhotoImage(image)
+        time.sleep(10)
+            
     
     def videoLoop(self):
         # DISCLAIMER:
         # I'm not a GUI developer, nor do I even pretend to be. This
         # try/except statement is a pretty ugly hack to get around
         # a RunTime error that Tkinter throws due to threading
+        
+        goal_object = bytes(question(), encoding = "utf8")
         try:
             # keep looping over frames until we are instructed to stop
             while not self.stopEvent.is_set():
@@ -130,16 +141,13 @@ class PhotoBoothApp:
                             image = ImageTk.PhotoImage(image)
                 		
                             try:
-                                if list(objects[0].keys())[0] == b'person':
+                                if list(objects[0].keys())[0] == goal_object:
                                     print("good")
                                     # 這邊我先使用睡眠 1 秒，到時候設計 GUI 的人可以改成完成特效
-                                    
-                                    time.sleep(1)
-                                    break
-                                
+                                    self.check()
+        
                             except IndexError:
                                 pass
-                            
                             
                             
                             # if the panel is not None, we need to initialize it
@@ -201,5 +209,15 @@ def model_preparation():
     category_index = label_map_util.create_category_index(categories)
     return detection_graph, category_index
 
-        
+
+
+def question():
+     goal_object = random.choice ( ['backpack', 'umbrella', 'suitcase', 'sports ball' , 'baseball bat', 'tennis racket', 'bottle'
+     , 'cup', 'fork', 'knife', 'spoon', 'bowl', 'chair', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'book'
+     , 'clock', 'scissors', 'toothbruth'] )
+     print (goal_object)
+     return goal_object
+ 
+
+
         
