@@ -12,7 +12,7 @@ tensorflow 1.7
 ## 操作方法
 1. 開啟終端機(CMD)
 2. 輸入 ```git clone https://github.com/AlanHoNCKU/ai_appilication_project.git```
-3. 開啟終端機執行 ```python tf_object_detect.py```
+3. 開啟終端機執行 ```python city_hunt_v1.py```
 
 ## v1 版本
 執行後會顯示即時影像串流，並且在辨識到物件為人的時候print('good')，接著開始下一次的辨識
