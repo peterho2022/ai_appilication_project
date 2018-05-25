@@ -45,18 +45,21 @@ class PhotoBoothApp:
         self.panel = None
         # create a button, that when pressed, will take the current
         # frame and save it to file
-        btn = tki.Button(self.root, text="Hunting !",command=self.takeSnapshot)
-        btn.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)
+#        btn = tki.Button(self.root, text="Hunting !",command=self.takeSnapshot)
+#        btn.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)
+        self.var = tki.StringVar()
         
-#        l = tki.Label(window, 
-#            text='OMG! this is TK!',    # 标签的文字
-#            bg='green',     # 背景颜色
-#            font=('Arial', 12),     # 字体和字体大小
-#            width=15, height=2  # 标签长宽
-#            )
-#        l.pack()    # 固定窗口位置
-
+        self.ques1= tki.StringVar()
+        self.ques2= tki.StringVar()
         
+        self.score1=tki.StringVar()
+        self.score2=tki.StringVar()
+        
+        
+        self.var.set('Hunting..')
+        self.score1.set('0')
+        self.score2.set('0')
+    
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
@@ -68,11 +71,7 @@ class PhotoBoothApp:
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
         
         
-    def check(self):
-        img = cv2.imread(os.getcwd()+'\\pyimagesearch\\F4522_3.jpg',1)
-        image = Image.fromarray(img)
-        image = ImageTk.PhotoImage(image)
-        time.sleep(10)
+
             
     
     def videoLoop(self):
@@ -81,7 +80,9 @@ class PhotoBoothApp:
         # try/except statement is a pretty ugly hack to get around
         # a RunTime error that Tkinter throws due to threading
         
-        goal_object = bytes(question(), encoding = "utf8")
+        goal_object1 = bytes(question(), encoding = "utf8")
+        goal_object2 = bytes(question(), encoding = "utf8")
+        
         try:
             # keep looping over frames until we are instructed to stop
             while not self.stopEvent.is_set():
@@ -89,6 +90,41 @@ class PhotoBoothApp:
                 with self.detection_graph.as_default():
                     with tf.Session(graph=self.detection_graph) as sess:
                         while(1):
+                            
+                            
+                            while(goal_object1==goal_object2):
+                                goal_object1 = bytes(question(), encoding = "utf8")
+                            
+                            
+                            # for finding check
+                            if self.var.get()!='Hunting..':
+                                time.sleep(4)
+                            
+                            # set questions 
+                            self.ques1.set(goal_object1)
+                            self.ques2.set(goal_object2)
+                            
+                            # set notice 
+                            f = tki.Label(self.root,textvariable=self.var, font=('Arial', 18),width=15, height=2  )
+                            f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
+                            
+                            # question　& score
+                            q1 = tki.Label(self.root,textvariable=self.ques1, font=('Arial', 12),width=10, height=2  )
+                            q1.place(x=100, y=10, anchor='nw')
+                            
+                            q2 = tki.Label(self.root,textvariable=self.ques2, font=('Arial', 12),width=10, height=2  )
+                            q2.place(x=500, y=10, anchor='nw')
+                            
+                            s1= tki.Label(self.root,textvariable=self.score1, font=('Arial', 12),width=10, height=2  )
+                            s1.place(x=250, y=10, anchor='nw')
+                            
+                            s2 = tki.Label(self.root,textvariable=self.score2, font=('Arial', 12),width=10, height=2  )
+                            s2.place(x=650, y=10, anchor='nw')
+                                        
+                            
+                            self.var.set('Hunting..')
+                            
+                            
                             # grab the frame from the video stream and resize it to
                             # have a maximum width of 300 pixels
                             self.frame = self.vs.read()
@@ -133,19 +169,25 @@ class PhotoBoothApp:
                                 if scores[0, index] > threshold:
                                     object_dict[(self.category_index.get(value)).get('name').encode('utf8')] = scores[0, index]
                                     objects.append(object_dict)
-                            print(objects)
                             
                             
                             image = Image.fromarray(image)
                             
                             image = ImageTk.PhotoImage(image)
                 		
+                            # if match check whick team finish and set score 
                             try:
-                                if list(objects[0].keys())[0] == goal_object:
-                                    print("good")
-                                    # 這邊我先使用睡眠 1 秒，到時候設計 GUI 的人可以改成完成特效
-                                    self.check()
-        
+                                if (list(objects[0].keys())[0] == goal_object1) | (list(objects[0].keys())[0] == goal_object2):
+                                    
+                                    if list(objects[0].keys())[0] == goal_object1:
+                                        self.score1.set(str(int(self.score1.get())+1))
+                                        self.var.set('Team1 Founded !!')
+                                        goal_object1 = bytes(question(), encoding = "utf8")
+                                    else:
+                                        self.score2.set(str(int(self.score2.get())+1))
+                                        self.var.set('Team2 Founded !!')
+                                        goal_object2 = bytes(question(), encoding = "utf8")
+                                        
                             except IndexError:
                                 pass
                             
@@ -160,7 +202,8 @@ class PhotoBoothApp:
                             else:
                                 self.panel.configure(image=image)
                                 self.panel.image = image
-            
+                            
+                            
         except RuntimeError:
             print("[INFO] caught a RuntimeError")
 
