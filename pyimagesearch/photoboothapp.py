@@ -24,7 +24,6 @@ import time
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as vis_util
 
-
 class PhotoBoothApp:
     def __init__(self, vs, outputPath):
         # store the video stream object and output path, then initialize
@@ -43,11 +42,15 @@ class PhotoBoothApp:
         self.root = tki.Tk()
         self.root.geometry('800x800')
         self.panel = None
+        self.begin = False
         # create a button, that when pressed, will take the current
         # frame and save it to file
 #        btn = tki.Button(self.root, text="Hunting !",command=self.takeSnapshot)
 #        btn.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)
         self.var = tki.StringVar()
+        
+        self.time = tki.StringVar()
+        
         
         self.ques1= tki.StringVar()
         self.ques2= tki.StringVar()
@@ -57,9 +60,11 @@ class PhotoBoothApp:
         
         
         self.var.set('Hunting..')
+        self.time.set('30')
+        
         self.score1.set('0')
         self.score2.set('0')
-    
+        
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
@@ -70,74 +75,93 @@ class PhotoBoothApp:
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
         
+        btn = tki.Button(self.root, text="start!",command=self.startgame ,font=('Arial', 12),width=10, height=2 )
+        btn.place(x=700, y=700, anchor='n')    
         
+    def startgame(self):
+        self.begin = True
 
-            
-    
     def videoLoop(self):
         # DISCLAIMER:
         # I'm not a GUI developer, nor do I even pretend to be. This
         # try/except statement is a pretty ugly hack to get around
         # a RunTime error that Tkinter throws due to threading
         
-        goal_object1 = bytes(question(), encoding = "utf8")
-        goal_object2 = bytes(question(), encoding = "utf8")
+
         
         try:
             # keep looping over frames until we are instructed to stop
             while not self.stopEvent.is_set():
-                
                 with self.detection_graph.as_default():
                     with tf.Session(graph=self.detection_graph) as sess:
+                        
+                        while self.begin==False:
+                            continue
+                        
+                        # set questions
+                        goal_object1 = bytes(question(), encoding = "utf8")
+                        goal_object2 = bytes(question(), encoding = "utf8")
+                        tStart = time.time()+5    # timer start 5s for warm up
+                        
                         while(1):
+                            # time remain
+                            tEnd = time.time()
+                            remain_time= round(60-(tEnd-tStart))
                             
+                            # check end game
+                            if remain_time<0:
+                                self.begin = False
+                                break
                             
+                            # check repeat task
                             while(goal_object1==goal_object2):
                                 goal_object1 = bytes(question(), encoding = "utf8")
                             
-                            
                             # for finding check
                             if self.var.get()!='Hunting..':
-                                time.sleep(4)
+                                time.sleep(1)
                             
                             # set questions 
                             self.ques1.set(goal_object1)
                             self.ques2.set(goal_object2)
                             
-                            # set notice 
+                            #set time 
+                            self.time.set(remain_time)
+                            
+                            # showing state 
                             f = tki.Label(self.root,textvariable=self.var, font=('Arial', 18),width=15, height=2  )
-                            f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
+                            #f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
+                            f.place(x=380, y=700, anchor='n')    
+                            # showing time 
+                            g = tki.Label(self.root,textvariable=self.time, font=('Arial', 15),width=10, height=2  )
+                            g.place(x=380, y=10, anchor='n')    
                             
                             # question　& score
-                            q1 = tki.Label(self.root,textvariable=self.ques1, font=('Arial', 12),width=10, height=2  )
-                            q1.place(x=100, y=10, anchor='nw')
+                            q1 = tki.Label(self.root,textvariable=self.ques1, font=('Arial', 15),width=10, height=2  )
+                            q1.place(x=70, y=10, anchor='nw')
                             
-                            q2 = tki.Label(self.root,textvariable=self.ques2, font=('Arial', 12),width=10, height=2  )
+                            q2 = tki.Label(self.root,textvariable=self.ques2, font=('Arial', 15),width=10, height=2  )
                             q2.place(x=500, y=10, anchor='nw')
                             
-                            s1= tki.Label(self.root,textvariable=self.score1, font=('Arial', 12),width=10, height=2  )
-                            s1.place(x=250, y=10, anchor='nw')
+                            s1= tki.Label(self.root,textvariable=self.score1, font=('Arial', 15),width=10, height=2  )
+                            s1.place(x=220, y=10, anchor='nw')
                             
-                            s2 = tki.Label(self.root,textvariable=self.score2, font=('Arial', 12),width=10, height=2  )
+                            s2 = tki.Label(self.root,textvariable=self.score2, font=('Arial', 15),width=10, height=2  )
                             s2.place(x=650, y=10, anchor='nw')
                                         
                             
                             self.var.set('Hunting..')
                             
-                            
+                            # -------------------------pattern recognition ------------------------
                             # grab the frame from the video stream and resize it to
                             # have a maximum width of 300 pixels
                             self.frame = self.vs.read()
                             self.frame = imutils.resize(self.frame, width=800,height=700)
-                		
                             # OpenCV represents images in BGR order; however PIL
                             # represents images in RGB order, so we need to swap
                             # the channels, then convert to PIL and ImageTk format
-                            
                             image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
                             #image = Image.fromarray(image)
-                            
-                            
                             # 定義detection_graph的輸入和輸出向量
                             image_tensor = self.detection_graph.get_tensor_by_name('image_tensor:0')
                             # 每個框代表檢測到特定物件
@@ -170,11 +194,13 @@ class PhotoBoothApp:
                                     object_dict[(self.category_index.get(value)).get('name').encode('utf8')] = scores[0, index]
                                     objects.append(object_dict)
                             
-                            
+                            # transform numpy into image
                             image = Image.fromarray(image)
-                            
                             image = ImageTk.PhotoImage(image)
-                		
+                            # ------------------------------------------------------
+
+
+
                             # if match check whick team finish and set score 
                             try:
                                 if (list(objects[0].keys())[0] == goal_object1) | (list(objects[0].keys())[0] == goal_object2):
@@ -207,8 +233,6 @@ class PhotoBoothApp:
         except RuntimeError:
             print("[INFO] caught a RuntimeError")
 
-    def takeSnapshot(self):
-        pass
 
     def onClose(self):
         # set the stop event, cleanup the camera, and allow the rest of
