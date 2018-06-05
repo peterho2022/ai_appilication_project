@@ -62,8 +62,7 @@ class PhotoBoothApp:
         self.var.set('Hunting..')
         self.time.set('30')
         
-        self.score1.set('0')
-        self.score2.set('0')
+
         
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
@@ -80,7 +79,8 @@ class PhotoBoothApp:
         
     def startgame(self):
         self.begin = True
-
+        self.score1.set('0')
+        self.score2.set('0')
     def videoLoop(self):
         # DISCLAIMER:
         # I'm not a GUI developer, nor do I even pretend to be. This
