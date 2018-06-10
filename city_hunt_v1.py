@@ -110,7 +110,7 @@ def object_detect_stream(detection_graph, category_index, goal_object):
                     cv2.destroyAllWindows()
                     cap.release()
                 try:
-                    if list(objects[0].keys())[0] == goal_object:
+                    if list(objects[0].keys())[0] == goal_object or list(objects[1].keys())[0] ==goal_object or list(objects[2].keys())[0] ==goal_object:
                         print("good")
                         # cv2.destroyAllWindows()
                         cap.release()
@@ -119,6 +119,7 @@ def object_detect_stream(detection_graph, category_index, goal_object):
                         break
                 except IndexError:
                     pass
+
 
 
 """
@@ -136,7 +137,9 @@ if __name__ == "__main__":
     # 即時串流
     while True:
         goal_object = question()
-        object_detect_stream(detection_graph, category_index,  bytes(goal_object, encoding = "utf8") )
+        print("請尋找"+goal_object)
+        object_detect_stream(detection_graph, category_index,  bytes('chair', encoding = "utf8") )
+        # object_detect_stream(detection_graph, category_index,  bytes(goal_object, encoding = "utf8") )
 
 
 
