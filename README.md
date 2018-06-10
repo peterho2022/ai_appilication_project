@@ -15,7 +15,9 @@ https://www.facebook.com/City-Hunt-219114685486763/
 
 ## 版本
 win 10
+
 python 3.5
+
 tensorflow 1.7
 
 ## 操作方法
