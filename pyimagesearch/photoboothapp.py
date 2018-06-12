@@ -151,7 +151,7 @@ class PhotoBoothApp:
                                         
                             
                             #self.var.set('Hunting..')
-                            self.var.set(list(objects[0].keys())[0])
+                            self.var.set(str(list(objects[0].keys())[0]))
                             
                             # -------------------------pattern recognition ------------------------
                             # grab the frame from the video stream and resize it to
