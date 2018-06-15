@@ -43,11 +43,15 @@ class PhotoBoothApp:
         self.root.geometry('800x800')
         self.panel = None
         self.begin = False
+        self.root.configure(background='#444444')
         # create a button, that when pressed, will take the current
         # frame and save it to file
 #        btn = tki.Button(self.root, text="Hunting !",command=self.takeSnapshot)
 #        btn.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)
         self.var = tki.StringVar()
+        
+        self.found = tki.StringVar()
+
         
         self.time = tki.StringVar()
         
@@ -60,9 +64,11 @@ class PhotoBoothApp:
         
         
         self.var.set('Hunting..')
+        self.found.set('Waiting..')
+
         self.time.set('30')
         
-
+        
         
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
@@ -106,20 +112,16 @@ class PhotoBoothApp:
                         while(1):
                             # time remain
                             tEnd = time.time()
-                            remain_time= round(60-(tEnd-tStart))
+                            remain_time= round(5-(tEnd-tStart))
                             
-                            # check end game
-                            if remain_time<0:
-                                self.begin = False
-                                break
                             
                             # check repeat task
                             while(goal_object1==goal_object2):
                                 goal_object1 = bytes(question(), encoding = "utf8")
                             
                             # for finding check
-                            if self.var.get()!='Hunting..':
-                                time.sleep(1)
+#                            if self.var.get()!='Hunting..':
+#                                time.sleep(1)
                             
                             # set questions 
                             self.ques1.set(goal_object1)
@@ -129,29 +131,38 @@ class PhotoBoothApp:
                             self.time.set(remain_time)
                             
                             # showing state 
-                            f = tki.Label(self.root,textvariable=self.var, font=('Arial', 18),width=15, height=2  )
+                            f = tki.Label(self.root,textvariable=self.var, font=('Arial', 20),width=15, height=2  )
                             #f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
-                            f.place(x=380, y=700, anchor='n')    
+                            f.place(x=480, y=700, anchor='n')    
+                            
+                            i= tki.Label(self.root,textvariable=self.found, font=('Arial', 18),width=20, height=2  )
+                            i.place(x=180, y=700, anchor='n') 
+
+                            
                             # showing time 
-                            g = tki.Label(self.root,textvariable=self.time, font=('Arial', 15),width=10, height=2  )
-                            g.place(x=380, y=10, anchor='n')    
+                            g = tki.Label(self.root,textvariable=self.time , fg='#FFFFFF', bg='#444444', font=('Arial', 28),width=5, height=2 )
+                            g.place(x=400, y=6, anchor='n')    
                             
                             # question　& score
-                            q1 = tki.Label(self.root,textvariable=self.ques1, font=('Arial', 15),width=10, height=2  )
-                            q1.place(x=70, y=10, anchor='nw')
+                            q1 = tki.Label(self.root,textvariable=self.ques1,bg='#666666', fg='#FFFFFF', font=('Arial', 20),width=10, height=2  )
+                            q1.place(x=40, y=15, anchor='nw',)
                             
-                            q2 = tki.Label(self.root,textvariable=self.ques2, font=('Arial', 15),width=10, height=2  )
-                            q2.place(x=500, y=10, anchor='nw')
+                            q2 = tki.Label(self.root,textvariable=self.ques2,bg='#666666', fg='#FFFFFF', font=('Arial', 20),width=10, height=2  )
+                            q2.place(x=470, y=15, anchor='nw')
                             
-                            s1= tki.Label(self.root,textvariable=self.score1, font=('Arial', 15),width=10, height=2  )
-                            s1.place(x=220, y=10, anchor='nw')
+                            s1= tki.Label(self.root,textvariable=self.score1,bg='#444444', fg='#FFFFFF', font=('Arial', 25),width=5, height=2  )
+                            s1.place(x=220, y=15, anchor='nw')
                             
-                            s2 = tki.Label(self.root,textvariable=self.score2, font=('Arial', 15),width=10, height=2  )
-                            s2.place(x=650, y=10, anchor='nw')
+                            s2 = tki.Label(self.root,textvariable=self.score2,bg='#444444', fg='#FFFFFF', font=('Arial', 25),width=5, height=2  )
+                            s2.place(x=650, y=15, anchor='nw')
                                         
                             
+<<<<<<< HEAD
+                            
+=======
                             #self.var.set('Hunting..')
                             self.var.set(str(list(objects[0].keys())[0]))
+>>>>>>> 2e333cf5c789aacfc911427312fe0137a80f7f71
                             
                             # -------------------------pattern recognition ------------------------
                             # grab the frame from the video stream and resize it to
@@ -199,9 +210,14 @@ class PhotoBoothApp:
                             image = Image.fromarray(image)
                             image = ImageTk.PhotoImage(image)
                             # ------------------------------------------------------
-
-
-
+                            
+                            # hunting hint
+                            if list(objects )!= []:
+                                self.var.set(list(objects[0].keys())[0])
+                            else:
+                                self.var.set('Hunting..')
+                            
+                            
                             # if match check whick team finish and set score 
                             try:
                                 if (list(objects[0].keys())[0] == goal_object1) | (list(objects[0].keys())[0] == goal_object2):
@@ -209,16 +225,32 @@ class PhotoBoothApp:
                                     if list(objects[0].keys())[0] == goal_object1:
                                         self.score1.set(str(int(self.score1.get())+1))
                                         self.var.set('Team1 Founded !!')
+                                        self.found.set('Team1 Founded '+ str(goal_object1.decode()))
                                         goal_object1 = bytes(question(), encoding = "utf8")
                                     else:
                                         self.score2.set(str(int(self.score2.get())+1))
                                         self.var.set('Team2 Founded !!')
+                                        self.found.set('Team2 Founded '+ str(goal_object2.decode()))
                                         goal_object2 = bytes(question(), encoding = "utf8")
                                         
                             except IndexError:
                                 pass
                             
                             
+                            # check end game
+                            if remain_time<1:
+                                self.begin = False
+                                if int(self.score1.get())>int(self.score2.get()):
+                                    self.var.set('Team1 WIN !!')
+                                elif int(self.score1.get())<int(self.score2.get()):
+                                    self.var.set('Team2 WIN !!')
+                                else:
+                                    self.var.set('DREW !!')
+                                f = tki.Label(self.root,textvariable=self.var, font=('Arial', 20),width=15, height=2  )
+                                #f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
+                                f.place(x=480, y=700, anchor='n')    
+                                break
+                                
                             # if the panel is not None, we need to initialize it
                             if self.panel is None:
                                 self.panel = tki.Label(image=image)
@@ -251,14 +283,14 @@ def model_preparation():
     # 下載所需model
     MODEL_NAME = 'ssd_mobilenet_v1_coco_2017_11_17'
     MODEL_FILE = MODEL_NAME + '.tar.gz'
-    DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
+    #DOWNLOAD_BASE = 'http://download.tensorflow.org/models/object_detection/'
     PATH_TO_CKPT = MODEL_NAME + '/frozen_inference_graph.pb'
     # 類別列表
     PATH_TO_LABELS = os.path.join('object_detection/data', 'mscoco_label_map.pbtxt')
     NUM_CLASSES = 90
     
-    opener = urllib.request.URLopener()
-    opener.retrieve(DOWNLOAD_BASE + MODEL_FILE, MODEL_FILE)
+    #opener = urllib.request.URLopener()
+    #opener.retrieve(DOWNLOAD_BASE + MODEL_FILE, MODEL_FILE)
     tar_file = tarfile.open(MODEL_FILE)
     for file in tar_file.getmembers():
         file_name = os.path.basename(file.name)
