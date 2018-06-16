@@ -8,6 +8,7 @@ import datetime
 import imutils
 import cv2
 import os
+import pyautogui
 
 import numpy as np
 import random
@@ -39,8 +40,12 @@ class PhotoBoothApp:
         self.stopEvent = None
         
         # initialize the root window and image panel
+        width, height = pyautogui.size()
+        # geometry_x = 800
+        # geometry_y = 800
+        global width, height
         self.root = tki.Tk()
-        self.root.geometry('800x800')
+        self.root.geometry(str(width) + 'x' + str(height))
         self.panel = None
         self.begin = False
         self.root.configure(background='#444444')
@@ -81,7 +86,7 @@ class PhotoBoothApp:
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
         
         btn = tki.Button(self.root, text="start!",command=self.startgame ,font=('Arial', 12),width=10, height=2 )
-        btn.place(x=700, y=700, anchor='n')    
+        btn.place(x=width*0.2, y=height*0.5, anchor='n')    
         
     def startgame(self):
         self.begin = True
@@ -92,9 +97,6 @@ class PhotoBoothApp:
         # I'm not a GUI developer, nor do I even pretend to be. This
         # try/except statement is a pretty ugly hack to get around
         # a RunTime error that Tkinter throws due to threading
-        
-
-        
         try:
             # keep looping over frames until we are instructed to stop
             while not self.stopEvent.is_set():
@@ -133,36 +135,31 @@ class PhotoBoothApp:
                             # showing state 
                             f = tki.Label(self.root,textvariable=self.var, font=('Arial', 20),width=15, height=2  )
                             #f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
-                            f.place(x=480, y=700, anchor='n')    
+                            f.place(x=width*0.8, y=height*0.8, anchor='n')    
                             
-                            i= tki.Label(self.root,textvariable=self.found, font=('Arial', 18),width=20, height=2  )
-                            i.place(x=180, y=700, anchor='n') 
+                            # i= tki.Label(self.root,textvariable=self.found, font=('Arial', 18),width=20, height=2  )
+                            # i.place(x=width*0.225, y=height*0.6, anchor='n') 
 
                             
                             # showing time 
                             g = tki.Label(self.root,textvariable=self.time , fg='#FFFFFF', bg='#444444', font=('Arial', 28),width=5, height=2 )
-                            g.place(x=400, y=6, anchor='n')    
+                            g.place(x=width*0.5, y=height*0.0075, anchor='n')    
                             
                             # question　& score
                             q1 = tki.Label(self.root,textvariable=self.ques1,bg='#666666', fg='#FFFFFF', font=('Arial', 20),width=10, height=2  )
-                            q1.place(x=40, y=15, anchor='nw',)
+                            q1.place(x=width*0.05, y=height*0.01875, anchor='nw',)
                             
                             q2 = tki.Label(self.root,textvariable=self.ques2,bg='#666666', fg='#FFFFFF', font=('Arial', 20),width=10, height=2  )
-                            q2.place(x=470, y=15, anchor='nw')
+                            q2.place(x=width*0.5875, y=height*0.01875, anchor='nw')
                             
                             s1= tki.Label(self.root,textvariable=self.score1,bg='#444444', fg='#FFFFFF', font=('Arial', 25),width=5, height=2  )
-                            s1.place(x=220, y=15, anchor='nw')
+                            s1.place(x=width*0.275, y=height*0.01875, anchor='nw')
                             
                             s2 = tki.Label(self.root,textvariable=self.score2,bg='#444444', fg='#FFFFFF', font=('Arial', 25),width=5, height=2  )
-                            s2.place(x=650, y=15, anchor='nw')
+                            s2.place(x=width*0.8125, y=height*0.01875, anchor='nw')
                                         
                             
-<<<<<<< HEAD
                             
-=======
-                            #self.var.set('Hunting..')
-                            self.var.set(str(list(objects[0].keys())[0]))
->>>>>>> 2e333cf5c789aacfc911427312fe0137a80f7f71
                             
                             # -------------------------pattern recognition ------------------------
                             # grab the frame from the video stream and resize it to
@@ -248,14 +245,15 @@ class PhotoBoothApp:
                                     self.var.set('DREW !!')
                                 f = tki.Label(self.root,textvariable=self.var, font=('Arial', 20),width=15, height=2  )
                                 #f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
-                                f.place(x=480, y=700, anchor='n')    
+                                f.place(x=width*0.8, y=height*0.8, anchor='n')    
                                 break
                                 
                             # if the panel is not None, we need to initialize it
                             if self.panel is None:
                                 self.panel = tki.Label(image=image)
                                 self.panel.image = image
-                                self.panel.pack(side="left", padx=10, pady=10)
+                                # self.panel.pack(side="left", padx=10, pady=10)
+                                self.panel.place(x=width*0.5-400, y=height*0.5-350)
                 		
                             # otherwise, simply update the panel
                             else:
@@ -318,6 +316,3 @@ def question():
      print (goal_object)
      return goal_object
  
-
-
-        
