@@ -48,7 +48,7 @@ class PhotoBoothApp:
         self.root.geometry(str(width) + 'x' + str(height))
         self.panel = None
         self.begin = False
-        self.root.configure(background='#444444')
+        self.root.configure(background='#FFFFFF')
         # create a button, that when pressed, will take the current
         # frame and save it to file
 #        btn = tki.Button(self.root, text="Hunting !",command=self.takeSnapshot)
@@ -59,7 +59,7 @@ class PhotoBoothApp:
 
         
         self.time = tki.StringVar()
-        
+        # self.time = 100
         
         self.ques1= tki.StringVar()
         self.ques2= tki.StringVar()
@@ -71,7 +71,6 @@ class PhotoBoothApp:
         self.var.set('Hunting..')
         self.found.set('Waiting..')
 
-        self.time.set('30')
         
         
         
@@ -86,7 +85,7 @@ class PhotoBoothApp:
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
         
         btn = tki.Button(self.root, text="start!",command=self.startgame ,font=('Arial', 12),width=10, height=2 )
-        btn.place(x=width*0.2, y=height*0.5, anchor='n')    
+        btn.place(x=width*0.5, y=height*0.2, anchor='n')    
         
     def startgame(self):
         self.begin = True
@@ -109,7 +108,7 @@ class PhotoBoothApp:
                         # set questions
                         goal_object1 = bytes(question(), encoding = "utf8")
                         goal_object2 = bytes(question(), encoding = "utf8")
-                        tStart = time.time()+5    # timer start 5s for warm up
+                        tStart = time.time()+105    # timer start 5s for warm up
                         
                         while(1):
                             # time remain
@@ -133,30 +132,40 @@ class PhotoBoothApp:
                             self.time.set(remain_time)
                             
                             # showing state 
-                            f = tki.Label(self.root,textvariable=self.var, font=('Arial', 20),width=15, height=2  )
-                            #f.pack(side="bottom", fill="both", expand="yes", padx=5,pady=5)    # 固定窗口位置
-                            f.place(x=width*0.8, y=height*0.8, anchor='n')    
+                            # f = tki.Label(self.root,textvariable=self.var, font=('Arial', 20),width=15, height=2  )
+                            # f.place(x=width*0.8, y=height*0.8, anchor='n')
                             
                             # i= tki.Label(self.root,textvariable=self.found, font=('Arial', 18),width=20, height=2  )
                             # i.place(x=width*0.225, y=height*0.6, anchor='n') 
 
-                            
+                            # Title
+                            title_label = tki.Label(self.root,text='City Hunt',anchor="center", fg='#ffffff', bg='#000000', font=('Arial', 20),width=width, height=1)
+                            title_label.place(x=(width/2), y=20, anchor='center') 
+
                             # showing time 
-                            g = tki.Label(self.root,textvariable=self.time , fg='#FFFFFF', bg='#444444', font=('Arial', 28),width=5, height=2 )
-                            g.place(x=width*0.5, y=height*0.0075, anchor='n')    
+                            g = tki.Label(self.root,textvariable=self.time , fg='#444444', bg='#ffffff', font=('Arial', 36),width=5, height=2)
+                            g.place(x=width*0.5-2.5, y=height*0.8-10, anchor='n')    
                             
-                            # question　& score
-                            q1 = tki.Label(self.root,textvariable=self.ques1,bg='#666666', fg='#FFFFFF', font=('Arial', 20),width=10, height=2  )
-                            q1.place(x=width*0.05, y=height*0.01875, anchor='nw',)
+                            # question
+                            q1 = tki.Label(self.root,textvariable=self.ques1,bg='#ffffff', fg='#ff6970', font=('Arial', 25),width=10, height=2)
+                            q1.place(x=(width*0.2)-10, y=height*0.8-5, anchor='nw',)
                             
-                            q2 = tki.Label(self.root,textvariable=self.ques2,bg='#666666', fg='#FFFFFF', font=('Arial', 20),width=10, height=2  )
-                            q2.place(x=width*0.5875, y=height*0.01875, anchor='nw')
+                            q2 = tki.Label(self.root,textvariable=self.ques2,bg='#ffffff', fg='#336699', font=('Arial', 25),width=10, height=2)
+                            q2.place(x=(width*0.7)-10, y=height*0.8-5, anchor='nw')
                             
-                            s1= tki.Label(self.root,textvariable=self.score1,bg='#444444', fg='#FFFFFF', font=('Arial', 25),width=5, height=2  )
-                            s1.place(x=width*0.275, y=height*0.01875, anchor='nw')
+                            # P1, P2 Score
+                            p1_s1 = tki.Label(self.root,text='P1 \n Score',bg='#ffffff', fg="#ff6970", font=('Arial', 24),width=10, height=3)
+                            p1_s1.place(x=width*0.09, y=height*0.3, anchor='nw')
+
+                            p1_s2 = tki.Label(self.root,text='P2 \n Score',bg='#ffffff', fg="#336699", font=('Arial', 24),width=10, height=3)
+                            p1_s2.place(x=width*0.79, y=height*0.3, anchor='nw')
+
+                            # score
+                            s1= tki.Label(self.root,textvariable=self.score1,bg='#ffffff', fg="#ff6970", font=('Arial 38 bold'),width=5, height=2  )
+                            s1.place(x=width*0.1-2.5, y=height*0.5-10, anchor='nw')
                             
-                            s2 = tki.Label(self.root,textvariable=self.score2,bg='#444444', fg='#FFFFFF', font=('Arial', 25),width=5, height=2  )
-                            s2.place(x=width*0.8125, y=height*0.01875, anchor='nw')
+                            s2 = tki.Label(self.root,textvariable=self.score2,bg='#ffffff', fg='#336699', font=('Arial 38 bold'),width=5, height=2  )
+                            s2.place(x=width*0.8-2.5, y=height*0.5-10, anchor='nw')
                                         
                             
                             
@@ -165,7 +174,7 @@ class PhotoBoothApp:
                             # grab the frame from the video stream and resize it to
                             # have a maximum width of 300 pixels
                             self.frame = self.vs.read()
-                            self.frame = imutils.resize(self.frame, width=800,height=700)
+                            self.frame = imutils.resize(self.frame, width=900,height=750)
                             # OpenCV represents images in BGR order; however PIL
                             # represents images in RGB order, so we need to swap
                             # the channels, then convert to PIL and ImageTk format
@@ -253,7 +262,7 @@ class PhotoBoothApp:
                                 self.panel = tki.Label(image=image)
                                 self.panel.image = image
                                 # self.panel.pack(side="left", padx=10, pady=10)
-                                self.panel.place(x=width*0.5-400, y=height*0.5-350)
+                                self.panel.place(x=width*0.5-450, y=height*0.5-375)
                 		
                             # otherwise, simply update the panel
                             else:
