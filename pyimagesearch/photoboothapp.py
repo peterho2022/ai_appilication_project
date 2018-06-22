@@ -2,6 +2,7 @@
 from __future__ import print_function
 from PIL import Image
 from PIL import ImageTk
+from tkinter import *
 import tkinter as tki
 import threading
 import datetime
@@ -71,9 +72,6 @@ class PhotoBoothApp:
         self.var.set('Hunting..')
         self.found.set('Waiting..')
 
-        
-        
-        
         # start a thread that constantly pools the video sensor for
         # the most recently read frame
         self.stopEvent = threading.Event()
@@ -84,13 +82,30 @@ class PhotoBoothApp:
         self.root.wm_title("PyImageSearch PhotoBooth")
         self.root.wm_protocol("WM_DELETE_WINDOW", self.onClose)
         
-        btn = tki.Button(self.root, text="start!",command=self.startgame ,font=('Arial', 12),width=10, height=2 )
-        btn.place(x=width*0.5, y=height*0.2, anchor='n')    
+        # start meau 
+        # self.background_label()
+        img=Image.open("start_meau_s.jpg")
+        img = img.resize((width, height), Image.ANTIALIAS)
+        background_img = ImageTk.PhotoImage(img)
+        global background_label
+        background_label = tki.Label(self.root, image=background_img)
+        background_label.place(x=0, y=0)
+        background_label.photo = background_img
         
+        
+        # start_img = Image.open("start_btn.jpg")
+        # start_img = start_img.resize((20, 4), Image.ANTIALIAS)
+        # start_img = ImageTk.PhotoImage(start_img)
+        global btn
+        btn = tki.Button(self.root, text="start!", relief = FLAT, command=self.startgame,bg='#ffffff',fg="#ff44ff", font=('Arial', 16),width=16, height=2)
+        btn.place(x=width*0.5, y=height*0.67+15, anchor='n')
+
     def startgame(self):
         self.begin = True
         self.score1.set('0')
         self.score2.set('0')
+        btn.place_forget()
+        background_label.place_forget()
     def videoLoop(self):
         # DISCLAIMER:
         # I'm not a GUI developer, nor do I even pretend to be. This
@@ -100,8 +115,7 @@ class PhotoBoothApp:
             # keep looping over frames until we are instructed to stop
             while not self.stopEvent.is_set():
                 with self.detection_graph.as_default():
-                    with tf.Session(graph=self.detection_graph) as sess:
-                        
+                    with tf.Session(graph=self.detection_graph) as sess:                        
                         while self.begin==False:
                             continue
                         
@@ -121,8 +135,8 @@ class PhotoBoothApp:
                                 goal_object1 = bytes(question(), encoding = "utf8")
                             
                             # for finding check
-#                            if self.var.get()!='Hunting..':
-#                                time.sleep(1)
+                            #if self.var.get()!='Hunting..':
+                            #time.sleep(1)
                             
                             # set questions 
                             self.ques1.set(goal_object1)
@@ -138,37 +152,52 @@ class PhotoBoothApp:
                             # i= tki.Label(self.root,textvariable=self.found, font=('Arial', 18),width=20, height=2  )
                             # i.place(x=width*0.225, y=height*0.6, anchor='n') 
 
+                            # Time img
+                            # img=Image.open("time_img.jpg")
+                            # img = img.resize((20, 20), Image.ANTIALIAS)
+                            # background_img = ImageTk.PhotoImage(img)
+                            # time_img_label = tki.Label(self.root, image=background_img)
+                            # time_img_label.place(x=width*0.5, y=height*0.9)
+                            # time_img_label.photo = background_img
+
+                            # Bar
+                            left_label = tki.Label(self.root,text='',anchor="center", fg='#ffffff', bg='#00A0E9', font=('Arial', 20),width=int(width*0.5), height=3)
+                            left_label.place(x=0, y=height*0.85, anchor='nw')
+                            right_label = tki.Label(self.root,text='',anchor="center", fg='#ffffff', bg='#C41673', font=('Arial', 20),width=int(width*0.5), height=3)
+                            right_label.place(x=width/2, y=height*0.85, anchor='nw')
+
                             # Title
                             title_label = tki.Label(self.root,text='City Hunt',anchor="center", fg='#ffffff', bg='#000000', font=('Arial', 20),width=width, height=1)
                             title_label.place(x=(width/2), y=20, anchor='center') 
+                            
+                            # Bar
+                            # left_label = tki.Label(self.root,text='',anchor="center", fg='#ffffff', bg='#00A0E9', font=('Arial', 20),width=width*0.5, height=2)
+                            # left_label.place(x=0, y=height*0.8, anchor='center') 
 
                             # showing time 
                             g = tki.Label(self.root,textvariable=self.time , fg='#444444', bg='#ffffff', font=('Arial', 36),width=5, height=2)
-                            g.place(x=width*0.5-2.5, y=height*0.8-10, anchor='n')    
+                            g.place(x=width*0.5-2.5, y=height*0.8, anchor='n')
                             
                             # question
-                            q1 = tki.Label(self.root,textvariable=self.ques1,bg='#ffffff', fg='#ff6970', font=('Arial', 25),width=10, height=2)
-                            q1.place(x=(width*0.2)-10, y=height*0.8-5, anchor='nw',)
+                            q1 = tki.Label(self.root,textvariable=self.ques1,bg='#ffffff', fg='#00A0E9', font=('Arial', 25),width=10, height=2)
+                            q1.place(x=(width*0.1)-50, y=height*0.8-30, anchor='nw',)
                             
-                            q2 = tki.Label(self.root,textvariable=self.ques2,bg='#ffffff', fg='#336699', font=('Arial', 25),width=10, height=2)
-                            q2.place(x=(width*0.7)-10, y=height*0.8-5, anchor='nw')
+                            q2 = tki.Label(self.root,textvariable=self.ques2,bg='#ffffff', fg='#C41673', font=('Arial', 25),width=10, height=2)
+                            q2.place(x=(width*0.8)-50, y=height*0.8-30, anchor='nw')
                             
-                            # P1, P2 Score
-                            p1_s1 = tki.Label(self.root,text='P1 \n Score',bg='#ffffff', fg="#ff6970", font=('Arial', 24),width=10, height=3)
+                            # P1, P2 Score 
+                            p1_s1 = tki.Label(self.root,text='P1 \n Score',bg='#ffffff', fg="#00A0E9", font=('Arial', 24),width=10, height=3)
                             p1_s1.place(x=width*0.09, y=height*0.3, anchor='nw')
 
-                            p1_s2 = tki.Label(self.root,text='P2 \n Score',bg='#ffffff', fg="#336699", font=('Arial', 24),width=10, height=3)
+                            p1_s2 = tki.Label(self.root,text='P2 \n Score',bg='#ffffff', fg="#C41673", font=('Arial', 24),width=10, height=3)
                             p1_s2.place(x=width*0.79, y=height*0.3, anchor='nw')
 
                             # score
-                            s1= tki.Label(self.root,textvariable=self.score1,bg='#ffffff', fg="#ff6970", font=('Arial 38 bold'),width=5, height=2  )
-                            s1.place(x=width*0.1-2.5, y=height*0.5-10, anchor='nw')
+                            s1= tki.Label(self.root,textvariable=self.score1,bg='#ffffff', fg="#00A0E9", font=('Arial 38 bold'),width=5, height=2  )
+                            s1.place(x=width*0.1, y=height*0.5-10, anchor='nw')
                             
-                            s2 = tki.Label(self.root,textvariable=self.score2,bg='#ffffff', fg='#336699', font=('Arial 38 bold'),width=5, height=2  )
-                            s2.place(x=width*0.8-2.5, y=height*0.5-10, anchor='nw')
-                                        
-                            
-                            
+                            s2 = tki.Label(self.root,textvariable=self.score2,bg='#ffffff', fg='#C41673', font=('Arial 38 bold'),width=5, height=2  )
+                            s2.place(x=width*0.8, y=height*0.5-10, anchor='nw')
                             
                             # -------------------------pattern recognition ------------------------
                             # grab the frame from the video stream and resize it to
@@ -282,8 +311,8 @@ class PhotoBoothApp:
         self.vs.stop()
         self.root.quit()
         
-        
-    # 載入模型
+
+# 載入模型
 def model_preparation():
     # 設定系統路徑
     sys.path.append("../object_detection")
@@ -316,12 +345,11 @@ def model_preparation():
     category_index = label_map_util.create_category_index(categories)
     return detection_graph, category_index
 
-
-
 def question():
      goal_object = random.choice ( ['backpack', 'umbrella', 'suitcase', 'sports ball' , 'baseball bat', 'tennis racket', 'bottle'
      , 'cup', 'fork', 'knife', 'spoon', 'bowl', 'chair', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'book'
      , 'clock', 'scissors', 'toothbruth'] )
      print (goal_object)
      return goal_object
- 
+
+    
